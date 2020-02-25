@@ -13,7 +13,6 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true,}));
 app.use(express.static('./public'));
 
-<<<<<<< Updated upstream
 app.get('/', renderHomePage);
 app.get('/newSearch', newSearch);
 app.post('/searches', collectFormData);
@@ -59,7 +58,7 @@ function Book(obj) {
     this.author = obj.author || 'no author available';
     this.image_url = obj.image_url || 'https://i.imgur.com/J5LVHEL.jpg';
     this.description = obj.description; 
-=======
+
 app.get('/', (request, response) => {
   // console.log('i am on!');
   response.render('./pages/index.ejs');
@@ -69,7 +68,7 @@ app.get('/newSearch', newSearch);
 
 function newSearch(request, response){
   response.render('./searches/new.ejs');
->>>>>>> Stashed changes
+
 }
 
 // turn on the server
