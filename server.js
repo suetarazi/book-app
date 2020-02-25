@@ -14,12 +14,17 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static('./public'));
 
 app.get('/', renderHomePage);
+app.get('/newSearch', newSearch);
 app.post('/searches', collectFormData);
 
 
 function renderHomePage(request, response) {
     response.render('./pages/index.ejs');
 }
+
+function newSearch(request, response){
+    response.render('./searches/new.ejs');
+  }
 
 function collectFormData(request, response){
     let formData = request.body.search;
