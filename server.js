@@ -31,13 +31,13 @@ function collectFormData(request, response){
     let nameOfBookOrAuthor = formData[0];
     let isTitleOrAuthor = formData[1];
     let url = `https://www.googleapis.com/books/v1/volumes?q=`;
-
+    console.log('function is running');
     if(isTitleOrAuthor === 'title'){
         url += `+intitle:${nameOfBookOrAuthor}`;
     } else if (isTitleOrAuthor === 'author'){
         url += `+inauthor:${isTitleOrAuthor}`;
     }
-
+    
 
     superagent.get(url)
         .then(results => {
@@ -45,7 +45,7 @@ function collectFormData(request, response){
             const finalArray = resultsArray.map(book => {
                 new Book(book.volumeInfo);
             })
-            response.status(200).render('./show.ejs', {bananas: finalArray});
+            response.status(200).render('./searches/show.ejs', {bananas: finalArray});
         })
         .catch(err => {
             console.error(err);
@@ -57,7 +57,7 @@ function Book(obj) {
     this.title = obj.title || 'no title available';
     this.author = obj.author || 'no author available';
     this.image_url = obj.image_url || 'https://i.imgur.com/J5LVHEL.jpg';
-    this.description = obj.description; 
+    this.description = obj.description || 'no description available'; 
 }
 
 // turn on the server
