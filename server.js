@@ -20,7 +20,7 @@ app.get('/', (request, response) => {
 })
 
 
-
+// turn on the server
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`);
 })
