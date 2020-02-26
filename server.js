@@ -61,6 +61,7 @@ function collectFormData(request, response){
         })
 }
 
+//constructor function
 function Book(obj) {
     this.title = obj.title || 'no title available';
     this.authors = obj.authors || 'no author available';
