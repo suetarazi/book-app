@@ -5,6 +5,8 @@ const express = require ('express');
 const app = express();
 require ('ejs');
 const superagent = require('superagent');
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
 
 const PORT = process.env.PORT || 3001;
 //tells express to use ejs
@@ -12,11 +14,25 @@ app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true,}));
 
-
 app.get('/', renderHomePage);
 app.post('/searches', collectFormData);
 app.get('/newSearch', newSearch);
+app.get('/getBookData', handleBookData);
 
+function handleBookData(request, response){
+  let books = request.query.search.title;
+  let sqlQuery = 'SELECT * FROM books WHERE title=$1';
+  let safeValues = [books];
+
+  client.query(sqlQuery, safeValues)
+    .then(sqlResults => {
+      if(sqlResults.rowCount){
+        response.send(sqlResults.rows[0]);
+      } else {
+        collectFormData(request, response);
+      }
+    }).catch(err => console.error(err));
+}
 
 function renderHomePage(request, response) {
   response.render('pages/index');
@@ -45,7 +61,7 @@ function collectFormData(request, response){
       const finalArray = resultsArray.map(book => {
         return new Book(book.volumeInfo);
       });
-      response.status(200).render('./searches/show.ejs', {bookArryay: finalArray});
+      response.status(200).render('./searches/show.ejs', {bookArryay: finalArray,});
     })
     .catch(err => {
       console.error(err);
