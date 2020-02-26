@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 
 //tells express to use ejs
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true,}));
 app.use(express.static('./public'));
 
 app.get('/', renderHomePage);
@@ -67,9 +67,10 @@ function Book(obj) {
     this.authors = obj.authors || 'no author available';
     this.image_url =  obj.imageLinks.thumbnail ? obj.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
     this.description = obj.description || 'no description available'; 
+
 }
 
 // turn on the server
 app.listen(PORT, () => {
-    console.log(`listening on ${PORT}`);
-})
+  console.log(`listening on ${PORT}`);
+});
