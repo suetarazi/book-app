@@ -16,23 +16,9 @@ app.use(express.urlencoded({extended: true,}));
 
 app.get('/', renderHomePage);
 app.post('/searches', collectFormData);
-app.get('/newSearch', newSearch);
-app.get('/getBookData', handleBookData);
-
-function handleBookData(request, response){
-  let books = request.query.search.title;
-  let sqlQuery = 'SELECT * FROM books WHERE title=$1';
-  let safeValues = [books];
-
-  client.query(sqlQuery, safeValues)
-    .then(sqlResults => {
-      if(sqlResults.rowCount){
-        response.send(sqlResults.rows[0]);
-      } else {
-        collectFormData(request, response);
-      }
-    }).catch(err => console.error(err));
-}
+app.get('*', (request, response) => {
+  response.status(404).send('error page not found');
+});
 
 function renderHomePage(request, response) {
   response.render('pages/index');
@@ -43,25 +29,32 @@ function newSearch(request, response){
   response.render('pages/searches/new');
 }
 
+// function showBooks(request, response){
+//     // don't I need to call collectFormData or something and then push info constructor function to show.ejs?
+//     response.render('/searches/show.ejs');
+// }
 function collectFormData(request, response){
   let formData = request.body.search;
   let nameOfBookOrAuthor = formData[0];
   let isTitleOrAuthor = formData[1];
   let url = `https://www.googleapis.com/books/v1/volumes?q=`;
-
+  console.log('function is running');
   if(isTitleOrAuthor === 'title'){
     url += `+intitle:${nameOfBookOrAuthor}`;
   } else if (isTitleOrAuthor === 'author'){
-    url += `+inauthor:${nameOfBookOrAuthor}`;
+    url += `+inauthor:${isTitleOrAuthor}`;
   }
+
 
   superagent.get(url)
     .then(results => {
       let resultsArray = results.body.items;
-      const finalArray = resultsArray.map(book => {
+      const bookArray = resultsArray.map(book => {
         return new Book(book.volumeInfo);
+        // console.log(testBook);
       });
-      response.status(200).render('./searches/show.ejs', {bookArryay: finalArray,});
+      console.log(bookArray);
+      response.status(200).render('./searches/show.ejs', {obj: bookArray,});
     })
     .catch(err => {
       console.error(err);
@@ -69,11 +62,13 @@ function collectFormData(request, response){
     });
 }
 
+//constructor function
 function Book(obj) {
   this.title = obj.title || 'no title available';
-  this.author = obj.author || 'no author available';
-  this.image_url = obj.image_url || 'https://i.imgur.com/J5LVHEL.jpg';
-  this.description = obj.description;
+  this.authors = obj.authors || 'no author available';
+  this.image_url = obj.imageLinks.thumbnail ? obj.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
+  this.description = obj.description || 'no description available';
+
 }
 
 // turn on the server
