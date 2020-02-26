@@ -17,5 +17,6 @@ Actual Time to complete: 1 hour 40 minutes
 Number and Name of Feature: Trello Card 3 - constructor and superagent
 Estimated time to complete: 1 1/2 hour
 Start Time: 11:00 a.m.
-Finish Time: 
-Actual Time to complete: 
+Finish Time: 12:30 p.m. then next day
+Actual Time to complete: 1 day, 30 minutes
+

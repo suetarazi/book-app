@@ -16,7 +16,9 @@ app.use(express.static('./public'));
 app.get('/', renderHomePage);
 app.get('/newSearch', newSearch);
 app.post('/searches', collectFormData);
-
+app.get('*', (request, response) => {
+    response.status(404).send('error page not found')
+});
 
 function renderHomePage(request, response) {
     response.render('./pages/index.ejs');
@@ -26,26 +28,32 @@ function newSearch(request, response){
     response.render('./searches/new.ejs');
   }
 
+// function showBooks(request, response){
+//     // don't I need to call collectFormData or something and then push info constructor function to show.ejs?
+//     response.render('/searches/show.ejs');
+// }  
 function collectFormData(request, response){
     let formData = request.body.search;
     let nameOfBookOrAuthor = formData[0];
     let isTitleOrAuthor = formData[1];
     let url = `https://www.googleapis.com/books/v1/volumes?q=`;
-
+    console.log('function is running');
     if(isTitleOrAuthor === 'title'){
         url += `+intitle:${nameOfBookOrAuthor}`;
     } else if (isTitleOrAuthor === 'author'){
         url += `+inauthor:${isTitleOrAuthor}`;
     }
-
+    
 
     superagent.get(url)
         .then(results => {
             let resultsArray = results.body.items;
-            const finalArray = resultsArray.map(book => {
-                new Book(book.volumeInfo);
+            const bookArray = resultsArray.map(book => {
+                return new Book(book.volumeInfo);
+                // console.log(testBook);
             })
-            response.status(200).render('./show.ejs', {bananas: finalArray});
+            console.log(bookArray);
+            response.status(200).render('./searches/show.ejs', {obj: bookArray});
         })
         .catch(err => {
             console.error(err);
@@ -53,21 +61,12 @@ function collectFormData(request, response){
         })
 }
 
+//constructor function
 function Book(obj) {
     this.title = obj.title || 'no title available';
-    this.author = obj.author || 'no author available';
-    this.image_url = obj.image_url || 'https://i.imgur.com/J5LVHEL.jpg';
-    this.description = obj.description; 
-
-app.get('/', (request, response) => {
-  // console.log('i am on!');
-  response.render('./pages/index.ejs');
-  // response.send('hello');
-});
-app.get('/newSearch', newSearch);
-
-function newSearch(request, response){
-  response.render('./searches/new.ejs');
+    this.authors = obj.authors || 'no author available';
+    this.image_url =  obj.imageLinks.thumbnail ? obj.imageLinks.thumbnail : 'https://i.imgur.com/J5LVHEL.jpg';
+    this.description = obj.description || 'no description available'; 
 
 }
 
