@@ -1,0 +1,30 @@
+<!-- hello show ejs! -->
+<!DOCTYPE <!DOCTYPE html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Books</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/public/styles/base.css">
+    </head>
+    <body>
+        <main>
+            <header>
+                Search Results:
+            </header>
+            <section class = "task-view container">
+                <ul>
+                    <% obj.forEach(book => { %>
+                    <li><%= book.title %></li> 
+                    <li><%= book.authors %></li>
+                    <img src = <%= book.image_url %>/> 
+                    <li><%= book.description %></li>
+                   <% }) %>
+                </ul>
+            </section>
+        </main>
+        <script src="" async defer></script>
+    </body>
+</html>
