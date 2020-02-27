@@ -10,7 +10,7 @@
 
             <section class = "task-view container">
                 <ul>
-                    <% sqlBooks.forEach(book => { %>
+                    <% bananas.forEach(book => { %>
                     <li><%= book.title %></li> 
                     <li><%= book.authors %></li>
                     <img src = <%= book.image_url %>/> 
@@ -18,11 +18,7 @@
                     <li class = "book-detail"><a href= '/books/ <%= book.id %>' more details </a></li>
                    <% }) %>
                 </ul>
-            <section>
-                <p> There are <%= sqlBooks.length %> books available.</p> 
-            </section>
             </section>   
-        
         </main>
     </body>
 </html>
