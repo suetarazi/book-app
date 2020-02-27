@@ -5,8 +5,10 @@ const express = require ('express');
 const app = express();
 require ('ejs');
 const superagent = require('superagent');
-<<<<<<< HEAD
+
 const pg = require ('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+
 const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 3001;
@@ -23,11 +25,10 @@ app.use(express.static('./public'));
 app.use(methodOverride('_method'));
 
 
-
 //Routes
 // app.get('/index', renderHomePage);
 app.get('/newSearch', newSearch);
-=======
+
 const pg = require('pg');
 const client = new pg.Client(process.env.DATABASE_URL);
 
@@ -38,31 +39,26 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true,}));
 
 app.get('/', renderHomePage);
->>>>>>> c34cc3712ba356f894cdcaf7447b55dc14bf1497
 app.post('/searches', collectFormData);
 //display all books route:
 app.get('/index', displayAllBooks);
 // app.put('/books/:book_id', displayOneBook);
-
-
 //may not need this call if displaySearchPage function is a duplicate of search form from yesterday. Need to research this!!!
 app.get('/searches/new', displaySearchPage);
-
 app.get('*', (request, response) => {
   response.status(404).send('error page not found');
 });
 
-<<<<<<< HEAD
+
 //um, do we even need this function???
 function displaySearchPage(request, response) {
     //display the search page
     response.render('./add-view.ejs'); 
     //check path of ./add-view.ejs - may not be right.
-=======
+
 function renderHomePage(request, response) {
-  response.render('pages/index');
+  response.render('./pages/index');
   console.log('hi');
->>>>>>> c34cc3712ba356f894cdcaf7447b55dc14bf1497
 }
 
 
