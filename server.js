@@ -5,25 +5,86 @@ const express = require ('express');
 const app = express();
 require ('ejs');
 const superagent = require('superagent');
-const pg = require('pg');
+
+const pg = require ('pg');
 const client = new pg.Client(process.env.DATABASE_URL);
 
-const PORT = process.env.PORT || 3001;
-//tells express to use ejs
-app.use(express.static('./public'));
-app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: true,}));
+const methodOverride = require('method-override');
 
+const PORT = process.env.PORT || 3001;
+
+//Database setup
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => console.error(err));
+
+//Middleware = 'the train robber'
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({extended: true}));
+app.use(express.static('./public'));
+//allows me to change my 'post' to a 'put' in my HTML
+app.use(methodOverride('_method'));
+
+
+//Routes
+// app.get('/index', renderHomePage);
+app.get('/newSearch', newSearch);
 app.get('/', renderHomePage);
 app.post('/searches', collectFormData);
+//display all books route:
+app.get('/index', displayAllBooks);
+// app.put('/books/:book_id', displayOneBook);
+//may not need this call if displaySearchPage function is a duplicate of search form from yesterday. Need to research this!!!
+app.get('/searches/new', displaySearchPage);
 app.get('*', (request, response) => {
   response.status(404).send('error page not found');
 });
 
+
+//um, do we even need this function???
+function displaySearchPage(request, response) {
+    //display the search page
+    response.render('./add-view.ejs'); 
+    //check path of ./add-view.ejs - may not be right.
+
 function renderHomePage(request, response) {
-  response.render('pages/index');
+  response.render('./pages/index');
   console.log('hi');
 }
+
+
+function displayOneBook(request, response) {
+    //get the params from the URL
+    //go to the db with id - find the book
+    //display the details
+    let id = request.params.book_id;
+    let sql = 'SELECT * FROM books WHERE id=$1;';
+    let safeValues = [id];
+    console.log(request.params.book_id);
+
+    client.query(sql, safeValues)
+    .then(results => {
+        response.render('./pages/details.ejs', {bananas: results.rows})
+    })
+
+}
+
+function displayAllBooks(request, response){
+    let sql = 'SELECT * FROM books;';
+    client.query(sql)
+    .then (results => {
+        console.log('show me sql')
+        // console.log(results.rows)
+           response.render('./pages/index.ejs', {sqlBooks: results.rows})
+    })
+    .catch(err => {
+        console.error(err);
+        response.status(500).send(err);
+    })
+}
+
+// function renderHomePage(request, response) {
+//     response.render('./pages/index.ejs');
+// }
 
 function newSearch(request, response){
   response.render('pages/searches/new');
@@ -71,7 +132,10 @@ function Book(obj) {
 
 }
 
-// turn on the server
+// turn on the server AND connect to the Database
+client.connect()
+    .then(() => {
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`);
-});
+})
+    });
