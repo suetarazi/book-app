@@ -28,6 +28,16 @@ app.use(methodOverride('_method'));
 //Routes
 // app.get('/index', renderHomePage);
 app.get('/newSearch', newSearch);
+
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+
+const PORT = process.env.PORT || 3001;
+//tells express to use ejs
+app.use(express.static('./public'));
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({extended: true,}));
+
 app.get('/', renderHomePage);
 app.post('/searches', collectFormData);
 //display all books route:
