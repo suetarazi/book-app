@@ -1,14 +1,12 @@
 'use strict';
 
+//libraries
 require('dotenv').config();
 const express = require ('express');
 const app = express();
 require ('ejs');
 const superagent = require('superagent');
-
 const pg = require ('pg');
-const client = new pg.Client(process.env.DATABASE_URL);
-
 const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 3001;
@@ -29,15 +27,6 @@ app.use(methodOverride('_method'));
 // app.get('/index', renderHomePage);
 app.get('/newSearch', newSearch);
 
-const pg = require('pg');
-const client = new pg.Client(process.env.DATABASE_URL);
-
-const PORT = process.env.PORT || 3001;
-//tells express to use ejs
-app.use(express.static('./public'));
-app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: true,}));
-
 app.get('/', renderHomePage);
 app.post('/searches', collectFormData);
 //display all books route:
@@ -55,6 +44,7 @@ function displaySearchPage(request, response) {
     //display the search page
     response.render('./add-view.ejs'); 
     //check path of ./add-view.ejs - may not be right.
+}
 
 function renderHomePage(request, response) {
   response.render('./pages/index');
@@ -80,6 +70,7 @@ function displayOneBook(request, response) {
 
 function displayAllBooks(request, response){
     let sql = 'SELECT * FROM books;';
+    let totalBooks = 'SELECT COUNT(*) FROM books;';
     client.query(sql)
     .then (results => {
         console.log('show me sql')
@@ -148,4 +139,5 @@ client.connect()
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`);
 })
-    });
+    })
+;
